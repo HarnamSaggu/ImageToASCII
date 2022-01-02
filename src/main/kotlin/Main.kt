@@ -24,7 +24,8 @@ fun convertImageToASCII(filepath: String, map: Map<Double, Char>, resolution: In
 	var asciiImage = ""
 	for (y in 0 until image.height / resolution) {
 		for (x in 0 until image.width / resolution) {
-			val averageBrightness = image.getSubimage(x * resolution, y * resolution, resolution, resolution).getAverageBrightness()
+			val averageBrightness =
+				image.getSubimage(x * resolution, y * resolution, resolution, resolution).getAverageBrightness()
 			asciiImage += map[map.keys.closestValue(averageBrightness)].toString().repeat(charWidth)
 		}
 		asciiImage += "\n"
