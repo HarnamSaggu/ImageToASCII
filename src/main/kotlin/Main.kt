@@ -1,13 +1,54 @@
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import kotlin.math.abs
+
+val map = mapCharacters("@%#*+=-:. ")
 
 fun main() {
-	val image = ImageIO.read(File("src/main/resources/range.png"))
-	for (i in 0 until image.width) {
-		println(image.getPixelBrightness(i, 0))
-	}
+	val filepath = "src/main/resources/range.png"
+	val image = convertImageToASCII(filepath, map, 12, 3)
+	val lines = image.split("\n".toRegex())
+	var framedImage = "#${"-".repeat(lines[0].length)}#\n"
+	for (line in lines) framedImage += "|$line|\n"
+	framedImage += "#${"-".repeat(lines[0].length)}#"
+	println(framedImage)
 }
+
+fun convertImageToASCII(filepath: String, map: Map<Double, Char>, resolution: Int, charWidth: Int): String {
+	val file = File(filepath)
+	if (!file.exists() || !file.isFile) return "File not found"
+	if (map.isEmpty()) return "Map is empty"
+	val image = ImageIO.read(file) ?: return "Error when reading image"
+
+	var asciiImage = ""
+	for (y in 0 until image.height / resolution) {
+		for (x in 0 until image.width / resolution) {
+			val averageBrightness = image.getSubimage(x * resolution, y * resolution, resolution, resolution).getAverageBrightness()
+			asciiImage += map[map.keys.closestValue(averageBrightness)].toString().repeat(charWidth)
+		}
+		asciiImage += "\n"
+	}
+
+	return asciiImage.substring(0, asciiImage.length - 1)
+}
+
+private fun BufferedImage.getAverageBrightness(): Double {
+	var total = 0.0
+	for (y in 0 until this.height) {
+		for (x in 0 until this.width) {
+			total += this.getPixelBrightness(x, y)
+		}
+	}
+	return total / (this.width * this.height)
+}
+
+fun mapCharacters(characters: String): Map<Double, Char> {
+	val size = characters.length.toDouble()
+	return characters.toCharArray().associateBy { characters.indexOf(it) / size }
+}
+
+fun Set<Double>.closestValue(value: Double) = minByOrNull { abs(value - it) }
 
 fun BufferedImage.getPixelBrightness(x: Int, y: Int): Double {
 	val color = this.getRGB(x, y)
