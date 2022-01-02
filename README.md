@@ -10,3 +10,7 @@ The char width is how many times the char should be repeated as one character is
 The map is a set of chars which are arranged in order of light -> dark, these are the chars used for the image.
 <br><br>
 Enjoy :)
+
+<br><br><br>
+
+I have a example in src/main/resources, its the s. of liberty in ASCII form woth its orginal image. The ASCII form is quite large so look at its raw view :)
