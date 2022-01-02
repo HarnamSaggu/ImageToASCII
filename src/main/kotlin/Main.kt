@@ -2,17 +2,17 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 import kotlin.math.abs
-
-val map = mapCharacters("@Ø&0\$8øD#üæSÞ¢£auc×*:°DA00u\\·,´ ")
+import kotlin.math.pow
 
 fun main() {
+	val map = mapCharacters("@Ø&0\$8øD#üæSÞ¢£auc×*:°DA00u\\·,´ ")
 	val filepath = "src/main/resources/liberty.png"
 	val image = convertImageToASCII(filepath, map)
 	val lines = image.split("\n".toRegex())
 	var framedImage = "#${"-".repeat(lines[0].length)}#\n"
 	for (line in lines) framedImage += "|$line|\n"
 	framedImage += "#${"-".repeat(lines[0].length)}#"
-	println(framedImage)
+	File("C:\\Users\\theto\\OneDrive\\Desktop\\cube.txt").writeText(framedImage)
 }
 
 fun convertImageToASCII(filepath: String, map: Map<Double, Char>, resolution: Int = 12, charWidth: Int = 3): String {
@@ -43,9 +43,18 @@ private fun BufferedImage.getAverageBrightness(): Double {
 	return total / (this.width * this.height)
 }
 
-fun mapCharacters(characters: String): Map<Double, Char> {
+enum class Weight(val calc: (x: Double) -> Double) {
+	LIGHT({ x -> x }),
+	SEMI_LIGHT({ x -> -(1.0 / (1.32 * (x - 1.5))) - 0.5 }),
+	SEMI_DARK({ x -> x.pow(3) })
+}
+
+fun mapCharacters(characters: String, weight: Weight = Weight.LIGHT): Map<Double, Char> {
 	val size = characters.length.toDouble()
-	return characters.toCharArray().associateBy { characters.indexOf(it) / size }
+	return characters.toCharArray().associateBy {
+		val x = characters.indexOf(it) / size
+		weight.calc(x)
+	}
 }
 
 fun Set<Double>.closestValue(value: Double) = minByOrNull { abs(value - it) }
