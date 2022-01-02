@@ -50,11 +50,11 @@ enum class Weight(val calc: (x: Double) -> Double) {
 	SEMI_DARK({ x -> x.pow(3) })
 }
 
-fun mapCharacters(characters: String, weight: Weight = Weight.LIGHT): Map<Double, Char> {
+fun mapCharacters(characters: String, calc: (x: Double) -> Double = Weight.LIGHT.calc): Map<Double, Char> {
 	val size = characters.length.toDouble()
 	return characters.toCharArray().associateBy {
 		val x = characters.indexOf(it) / size
-		weight.calc(x)
+		calc(x)
 	}
 }
 
