@@ -3,7 +3,6 @@ import java.io.File
 import javax.imageio.ImageIO
 import kotlin.math.abs
 
-
 val map = mapCharacters("@Ø&0\$8øD#üæSÞ¢£auc×*:°DA00u\\·,´ ")
 
 fun main() {
